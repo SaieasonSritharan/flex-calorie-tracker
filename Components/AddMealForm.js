@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { globalStyles } from '../styles/theme';
 
 export default function AddMealForm({ onAddMeal }) {
   const [food, setFood] = useState('');
@@ -8,24 +9,16 @@ export default function AddMealForm({ onAddMeal }) {
   const handleSubmit = () => {
     if (!food || !calories) return;
     onAddMeal(food, calories);
-    setFood('');
-    setCalories('');
+    setFood(''); setCalories('');
   };
 
   return (
-    <View style={styles.inputContainer}>
-      <TextInput style={styles.input} placeholder="What did you eat?" value={food} onChangeText={setFood} />
-      <TextInput style={styles.input} placeholder="Calories" keyboardType="numeric" value={calories} onChangeText={setCalories} />
-      <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Log Meal</Text>
+    <View style={globalStyles.card}>
+      <TextInput style={globalStyles.input} placeholder="Food Name" value={food} onChangeText={setFood} />
+      <TextInput style={globalStyles.input} placeholder="Calories" keyboardType="numeric" value={calories} onChangeText={setCalories} />
+      <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
+        <Text style={globalStyles.buttonText}>Log Meal</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  inputContainer: { backgroundColor: '#fff', padding: 15, borderRadius: 12, marginBottom: 20, elevation: 2 },
-  input: { borderBottomWidth: 1, borderColor: '#eee', paddingVertical: 8, marginBottom: 10 },
-  addButton: { backgroundColor: '#007AFF', padding: 12, borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
-});
