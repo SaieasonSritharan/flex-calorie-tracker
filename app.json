@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CalorieApp",
-    "slug": "CalorieApp",
+    "slug": "calorie-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,10 +20,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": false,
+      "package": "com.saieasonsritharan2sorganization.calorietracker"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dad71b76-5fc1-4815-b920-1d7862a1ad83"
+      }
+    },
+    "owner": "saieasonsritharan2s-organization"
   }
 }

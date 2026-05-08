@@ -18,7 +18,7 @@ export default function ProfileSettings({ profile, onSaveProfile }) {
         <View style={globalStyles.card}>
           <View style={styles.inputRow}>
             <View style={styles.inputGroup}>
-              <Text style={globalStyles.label}>Current Weight (kg)</Text>
+              <Text style={globalStyles.label}>Current Weight (lb)</Text>
               <TextInput 
                 style={globalStyles.input} 
                 keyboardType="numeric" 
@@ -27,7 +27,7 @@ export default function ProfileSettings({ profile, onSaveProfile }) {
               />
             </View>
             <View style={styles.inputGroup}>
-              <Text style={globalStyles.label}>Target Weight (kg)</Text>
+              <Text style={globalStyles.label}>Target Weight (lb)</Text>
               <TextInput 
                 style={globalStyles.input} 
                 keyboardType="numeric" 
@@ -36,21 +36,41 @@ export default function ProfileSettings({ profile, onSaveProfile }) {
               />
             </View>
           </View>
+
+          {/* New Weekly Goal Section */}
+          <View style={{ marginTop: 5, marginBottom: 10 }}>
+            <Text style={globalStyles.label}>Weekly Pace (lbs per week)</Text>
+            <TextInput 
+              style={globalStyles.input} 
+              keyboardType="numeric" 
+              placeholder="e.g. 1.0"
+              value={profile.weeklyGoal} 
+              onChangeText={(v) => onSaveProfile({...profile, weeklyGoal: v})} 
+            />
+            <Text style={styles.helperText}>
+              Recommended: 0.5 to 2.0 lbs/week
+            </Text>
+          </View>
           
-          <Text style={globalStyles.label}>Height (cm)</Text>
-          <TextInput style={globalStyles.input} keyboardType="numeric" value={profile.height} onChangeText={(v) => onSaveProfile({...profile, height: v})} />
+          <View style={styles.inputRow}>
+            <View style={styles.inputGroup}>
+               <Text style={globalStyles.label}>Height (in)</Text>
+               <TextInput style={globalStyles.input} keyboardType="numeric" value={profile.height} onChangeText={(v) => onSaveProfile({...profile, height: v})} />
+            </View>
+            <View style={styles.inputGroup}>
+               <Text style={globalStyles.label}>Age</Text>
+               <TextInput style={globalStyles.input} keyboardType="numeric" value={profile.age} onChangeText={(v) => onSaveProfile({...profile, age: v})} />
+            </View>
+          </View>
           
-          <Text style={globalStyles.label}>Age</Text>
-          <TextInput style={globalStyles.input} keyboardType="numeric" value={profile.age} onChangeText={(v) => onSaveProfile({...profile, age: v})} />
-          
-          <View style={globalStyles.genderRow}>
+          <View style={[globalStyles.genderRow, { marginTop: 10 }]}>
             {['male', 'female'].map((g) => (
               <TouchableOpacity 
                 key={g} 
                 style={[globalStyles.genderBtn, profile.gender === g && globalStyles.activeGenderBtn]}
                 onPress={() => onSaveProfile({...profile, gender: g})}
               >
-                <Text style={{textTransform: 'capitalize'}}>{g}</Text>
+                <Text style={{textTransform: 'capitalize', color: profile.gender === g ? '#fff' : '#000'}}>{g}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -60,8 +80,8 @@ export default function ProfileSettings({ profile, onSaveProfile }) {
   );
 }
 
-// Add these to a local stylesheet or move to theme.js
 const styles = {
   inputRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 15 },
-  inputGroup: { flex: 1 }
+  inputGroup: { flex: 1 },
+  helperText: { fontSize: 11, color: '#666', marginTop: -8, marginBottom: 10, fontStyle: 'italic' }
 };
