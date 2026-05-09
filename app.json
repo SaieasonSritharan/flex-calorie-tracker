@@ -20,7 +20,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": false,
       "package": "com.saieasonsritharan2sorganization.calorietracker"
     },
     "web": {

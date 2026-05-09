@@ -184,7 +184,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={globalStyles.container} edges={['top', 'bottom']}>
+      <SafeAreaView style={globalStyles.container} edges={['top']}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
           <View style={globalStyles.tabRow}>
             <TouchableOpacity
