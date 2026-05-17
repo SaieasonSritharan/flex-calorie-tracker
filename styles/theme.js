@@ -270,4 +270,191 @@ export const globalStyles = StyleSheet.create({
   genderRow: { flexDirection: 'row', gap: 10, marginTop: 6 },
   genderBtn: { flex: 1, padding: 11, alignItems: 'center', backgroundColor: '#F8FAFC', borderRadius: 10, borderWidth: 1, borderColor: colors.border },
   activeGenderBtn: { backgroundColor: colors.primary + '22', borderColor: colors.primary, borderWidth: 1 },
+
+  // ── Weekly Summary ────────────────────────────────────────────────────────
+
+  weeklySummaryContainer: {
+    marginVertical: 20,
+    paddingHorizontal: 15,
+  },
+  weeklySummaryTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textMain,
+    marginBottom: 12,
+  },
+  weeklySummaryScrollContent: {
+    paddingRight: 20,
+  },
+
+  // Averages card
+  weeklyAveragesCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#0F172A',
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+      },
+      android: { elevation: 2 },
+    }),
+  },
+  weeklyAveragesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  weeklyAveragesTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textMain,
+  },
+  weeklyAveragesBadge: {
+    fontSize: 12,
+    color: colors.muted,
+    fontWeight: '500',
+  },
+
+  // 2×2 stat grid
+  weeklyStatGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 14,
+  },
+  weeklyStatTile: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: colors.background,
+    borderRadius: 10,
+    padding: 12,
+    borderTopWidth: 3,
+  },
+  weeklyStatTileValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.textMain,
+  },
+  weeklyStatTileUnit: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  weeklyStatTileLabel: {
+    fontSize: 11,
+    color: colors.muted,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+
+  // Goal adherence bar
+  weeklyAdherenceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  weeklyAdherenceLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontWeight: '500',
+    width: 88,
+  },
+  weeklyAdherenceBarBg: {
+    flex: 1,
+    height: 8,
+    backgroundColor: colors.track,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  weeklyAdherenceBarFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  weeklyAdherenceCount: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    width: 24,
+    textAlign: 'right',
+  },
+
+  // Per-day cards
+  weeklyDayCard: {
+    backgroundColor: colors.surface,
+    padding: 15,
+    borderRadius: 12,
+    marginRight: 12,
+    width: 140,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#0F172A',
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+      },
+      android: { elevation: 3 },
+    }),
+  },
+  weeklyDayLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  weeklyStatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  weeklyStatLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  weeklyStatValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.textMain,
+  },
+  weeklyProgressBarBg: {
+    height: 6,
+    backgroundColor: colors.track,
+    borderRadius: 3,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  weeklyProgressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+
+  // Macro pills (inside day cards)
+  weeklyMacroPillRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginTop: 6,
+  },
+  weeklyMacroPill: {
+    borderRadius: 6,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  weeklyMacroPillText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  weeklyNoDataText: {
+    fontSize: 11,
+    color: colors.muted,
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
 });

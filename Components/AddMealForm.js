@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Modal, FlatList } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { globalStyles } from '../styles/theme';
 import { db } from '../firebaseConfig';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
-export default function AddMealForm({ onAddMeal }) {
+export default function AddMealForm({ onAddMeal, editingMeal, onUpdateMeal, onCancelEdit }) {
   const [food, setFood] = useState('');
   const [portionSize, setPortionSize] = useState('');
   const [calories, setCalories] = useState('');
@@ -21,7 +21,20 @@ export default function AddMealForm({ onAddMeal }) {
   const [scanLock, setScanLock] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
-  // ─── Save custom food to Firestore 'foods' collection ───────────────────────
+  // ─── Populate form when entering edit mode ────────────────────────────────
+  useEffect(() => {
+    if (editingMeal) {
+      setFood(editingMeal.name);
+      setPortionSize(editingMeal.portionSize);
+      setCalories(editingMeal.cals.toString());
+      setProtein((editingMeal.protein || 0).toString());
+      setCarbs((editingMeal.carbs || 0).toString());
+      setFats((editingMeal.fats || 0).toString());
+      setBaseNutrition(null);
+    }
+  }, [editingMeal]);
+
+  // ─── Save custom food to Firestore 'foods' collection ────────────────────
   const saveToMasterList = async () => {
     if (!food || !calories) {
       alert('Please enter at least a name and calories');
@@ -48,7 +61,7 @@ export default function AddMealForm({ onAddMeal }) {
     }
   };
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // ─── Helpers ──────────────────────────────────────────────────────────────
   const getNumber = (value, fallback = '0') => {
     const parsed = parseFloat(value);
     if (Number.isNaN(parsed)) return fallback;
@@ -103,7 +116,7 @@ export default function AddMealForm({ onAddMeal }) {
     setFats(getNumber(nutritionBase.fats));
   };
 
-  // ─── Barcode lookup ──────────────────────────────────────────────────────────
+  // ─── Barcode lookup ───────────────────────────────────────────────────────
   const lookupByBarcode = async (code) => {
     if (!code) return;
     setIsLoading(true);
@@ -122,7 +135,7 @@ export default function AddMealForm({ onAddMeal }) {
     }
   };
 
-  // ─── Combined search: Firestore → OpenFoodFacts ──────────────────────────────
+  // ─── Combined search: Firestore → OpenFoodFacts ───────────────────────────
   const lookupBySearch = async () => {
     const trimmed = searchTerm.trim().toLowerCase();
     if (!trimmed) return;
@@ -191,10 +204,18 @@ export default function AddMealForm({ onAddMeal }) {
     }
   };
 
-  // ─── Submit logged meal ───────────────────────────────────────────────────────
+  // ─── Submit: add or update ────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!food || !calories) return;
-    onAddMeal({ food, portionSize, calories, protein, carbs, fats });
+    const mealData = { food, portionSize, calories, protein, carbs, fats };
+
+    if (editingMeal) {
+      onUpdateMeal(mealData);
+    } else {
+      onAddMeal(mealData);
+    }
+
+    // Reset form
     setFood('');
     setPortionSize('');
     setCalories('');
@@ -207,37 +228,43 @@ export default function AddMealForm({ onAddMeal }) {
     setIsResultsModalOpen(false);
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────────
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <View style={globalStyles.card}>
-      <Text style={globalStyles.sectionTitle}>OpenFoodFacts Lookup</Text>
-
-      {/* Search row */}
-      <View style={globalStyles.lookupSearchRow}>
-        <Text style={globalStyles.searchIcon}>⌕</Text>
-        <TextInput
-          style={globalStyles.searchInput}
-          placeholder="Search food by name..."
-          placeholderTextColor="#94A3B8"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-        {!!searchTerm && (
-          <TouchableOpacity onPress={() => { setSearchTerm(''); setResults([]); }}>
-            <Text style={globalStyles.clearSearchText}>Clear</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <TouchableOpacity style={globalStyles.secondaryButtonWide} onPress={lookupBySearch}>
-        <Text style={globalStyles.secondaryButtonText}>
-          {isLoading ? 'Searching...' : 'Search OpenFoodFacts'}
-        </Text>
-      </TouchableOpacity>
-
-      <Text style={globalStyles.lookupHint}>
-        Enter a food name, then tap search to view results.
+      <Text style={globalStyles.sectionTitle}>
+        {editingMeal ? 'Edit Meal' : 'OpenFoodFacts Lookup'}
       </Text>
+
+      {/* Search row — hidden while editing so the user focuses on the fields */}
+      {!editingMeal && (
+        <>
+          <View style={globalStyles.lookupSearchRow}>
+            <Text style={globalStyles.searchIcon}>⌕</Text>
+            <TextInput
+              style={globalStyles.searchInput}
+              placeholder="Search food by name..."
+              placeholderTextColor="#94A3B8"
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+            />
+            {!!searchTerm && (
+              <TouchableOpacity onPress={() => { setSearchTerm(''); setResults([]); }}>
+                <Text style={globalStyles.clearSearchText}>Clear</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <TouchableOpacity style={globalStyles.secondaryButtonWide} onPress={lookupBySearch}>
+            <Text style={globalStyles.secondaryButtonText}>
+              {isLoading ? 'Searching...' : 'Search OpenFoodFacts'}
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={globalStyles.lookupHint}>
+            Enter a food name, then tap search to view results.
+          </Text>
+        </>
+      )}
 
       {/* Results modal */}
       <Modal
@@ -311,35 +338,39 @@ export default function AddMealForm({ onAddMeal }) {
         </View>
       </Modal>
 
-      {/* Barcode scanner */}
-      <TouchableOpacity
-        style={globalStyles.secondaryButtonWide}
-        onPress={async () => {
-          if (!permission?.granted) await requestPermission();
-          setIsScannerOpen((v) => !v);
-        }}
-      >
-        <Text style={globalStyles.secondaryButtonText}>
-          {isScannerOpen ? 'Close Scanner' : 'Scan Barcode'}
-        </Text>
-      </TouchableOpacity>
+      {/* Barcode scanner — hidden while editing */}
+      {!editingMeal && (
+        <>
+          <TouchableOpacity
+            style={globalStyles.secondaryButtonWide}
+            onPress={async () => {
+              if (!permission?.granted) await requestPermission();
+              setIsScannerOpen((v) => !v);
+            }}
+          >
+            <Text style={globalStyles.secondaryButtonText}>
+              {isScannerOpen ? 'Close Scanner' : 'Scan Barcode'}
+            </Text>
+          </TouchableOpacity>
 
-      {isScannerOpen && permission?.granted && (
-        <View style={globalStyles.scannerWrap}>
-          <CameraView
-            style={globalStyles.scanner}
-            facing="back"
-            barcodeScannerSettings={{
-              barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128'],
-            }}
-            onBarcodeScanned={({ data }) => {
-              if (scanLock) return;
-              setScanLock(true);
-              lookupByBarcode(data);
-              setTimeout(() => setScanLock(false), 1200);
-            }}
-          />
-        </View>
+          {isScannerOpen && permission?.granted && (
+            <View style={globalStyles.scannerWrap}>
+              <CameraView
+                style={globalStyles.scanner}
+                facing="back"
+                barcodeScannerSettings={{
+                  barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128'],
+                }}
+                onBarcodeScanned={({ data }) => {
+                  if (scanLock) return;
+                  setScanLock(true);
+                  lookupByBarcode(data);
+                  setTimeout(() => setScanLock(false), 1200);
+                }}
+              />
+            </View>
+          )}
+        </>
       )}
 
       {/* Manual entry fields */}
@@ -419,19 +450,31 @@ export default function AddMealForm({ onAddMeal }) {
         </View>
       </View>
 
-      {/* Save to master DB */}
-      <TouchableOpacity style={globalStyles.secondaryButtonWide} onPress={saveToMasterList}>
-        <Text style={globalStyles.secondaryButtonText}>
-          {isLoading ? 'Saving...' : 'Save to My Foods'}
+      {/* Save to master DB — hidden while editing */}
+      {!editingMeal && (
+        <TouchableOpacity style={globalStyles.secondaryButtonWide} onPress={saveToMasterList}>
+          <Text style={globalStyles.secondaryButtonText}>
+            {isLoading ? 'Saving...' : 'Save to My Foods'}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Primary action: Log or Update */}
+      <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
+        <Text style={globalStyles.buttonText}>
+          {editingMeal ? 'Update Meal' : (isLoading ? 'Loading...' : 'Log Meal')}
         </Text>
       </TouchableOpacity>
 
-      {/* Log meal */}
-      <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
-        <Text style={globalStyles.buttonText}>
-          {isLoading ? 'Loading...' : 'Log Meal'}
-        </Text>
-      </TouchableOpacity>
+      {/* Cancel edit */}
+      {editingMeal && (
+        <TouchableOpacity
+          style={[globalStyles.button, { backgroundColor: '#94A3B8', marginTop: 8 }]}
+          onPress={onCancelEdit}
+        >
+          <Text style={globalStyles.buttonText}>Cancel Edit</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
